@@ -21,6 +21,7 @@ class GithubServiceAuthHeaderTest {
     private RestClient restClient;
     private GithubService service;
 
+    // Mockito gets angry about generics here
     @SuppressWarnings("rawtypes")
     private RestClient.RequestHeadersUriSpec getSpec;
 

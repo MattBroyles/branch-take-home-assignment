@@ -50,7 +50,6 @@ public class GithubService {
         } catch (RestClientResponseException e) {
             throw mapGithubException("fetch user", username, e);
         }
-
     }
 
     private List<GithubRepoDto> fetchRepos(String username) {
@@ -86,23 +85,27 @@ public class GithubService {
         }
 
         if (statusCode == HttpStatus.FORBIDDEN) {
-            return new GithubForbiddenException("Github request received forbidden response, possibly due to rate-limiting or missing PAT scopes", e.getResponseBodyAsString());
+            return new GithubForbiddenException("Github request received forbidden response, possibly due to missing PAT scopes",
+                    e.getResponseBodyAsString());
         }
 
         if (statusCode == HttpStatus.TOO_MANY_REQUESTS) {
-            return new GithubTooManyRequestsException("Github returned too many requests exception", e.getResponseBodyAsString());
+            return new GithubTooManyRequestsException("Github returned too many requests exception",
+                    e.getResponseBodyAsString());
         }
 
         if (statusCode.is5xxServerError()) {
-            return new GithubUpstreamException(String.format("Github 500 error during %s with code %s: %s", action, statusCode, exceptionResponseBody), statusCode.value(), exceptionResponseBody);
+            return new GithubUpstreamException(String.format("Github 500 error during %s with code %s: %s",
+                    action, statusCode, exceptionResponseBody), statusCode.value(), exceptionResponseBody);
         }
 
-        return new GithubUpstreamException(String.format("GitHub request failed during %s with code %s: %s", action, statusCode, exceptionResponseBody), statusCode.value(), exceptionResponseBody);
+        return new GithubUpstreamException(String.format("GitHub request failed during %s with code %s: %s",
+                action, statusCode, exceptionResponseBody), statusCode.value(), exceptionResponseBody);
     }
 
     private void applyGithubHeaders(HttpHeaders headers) {
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.set(HttpHeaders.USER_AGENT, "branch-take-home/1.0"); // GitHub API is happier with a User-Agent
+        headers.set(HttpHeaders.USER_AGENT, "branch-take-home/1.0"); // GitHub API requires a user agent
         headers.set("X-GitHub-Api-Version", "2022-11-28");
 
         if (StringUtils.hasText(props.pat())) {

@@ -1,13 +1,10 @@
 package com.mattbroyles.branch.service;
 
+import com.mattbroyles.branch.exceptions.*;
 import com.mattbroyles.branch.model.api.dto.UserResponse;
 import com.mattbroyles.branch.model.client.dto.GithubRepoDto;
 import com.mattbroyles.branch.model.client.dto.GithubUserDto;
 import com.mattbroyles.branch.config.GithubProperties;
-import com.mattbroyles.branch.exceptions.GithubAuthException;
-import com.mattbroyles.branch.exceptions.GithubForbiddenException;
-import com.mattbroyles.branch.exceptions.GithubUpstreamException;
-import com.mattbroyles.branch.exceptions.GithubUserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClient;
@@ -113,6 +110,8 @@ class GithubServiceTest {
     void getUserWithRepos_whenGithub429_throwsTooManyRequests() {
         when(responseSpec.body(eq(GithubUserDto.class)))
                 .thenThrow(restEx(429, "{\"message\": \"rate limit\"}"));
+
+        assertThrows(GithubTooManyRequestsException.class, () -> service.getUserWithRepos("octocat"));
     }
 
     @Test

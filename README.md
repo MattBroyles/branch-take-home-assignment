@@ -7,7 +7,7 @@ payload pursuant to the spec given in this assignment's instructions.
 
 ## Assumptions
 * Java 17 is available locally
-* Gradle is used as the build tool, via gradle wrapper `./gradlew`
+* Gradle is used as the tool, via gradle wrapper
 * Network access to `api.github.com` is available
 
 ## Authentication
