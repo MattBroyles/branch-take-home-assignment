@@ -6,11 +6,13 @@ repositories from GitHub, transforms the upstream responses, and returns a simpl
 payload pursuant to the spec given in this assignment's instructions.
 
 ## Assumptions
+
 * Java 17 is available locally
-* Gradle is used as the tool, via gradle wrapper
+* Gradle is used as the build tool, via gradle wrapper
 * Network access to `api.github.com` is available
 
 ## Authentication
+
 Authentication is optional. This application supports including a bearer
 token via the presence of a `GITHUB_PAT` environment variable. If none
 is found, an unauthenticated request will be sent. The GitHub APIs being
@@ -18,7 +20,9 @@ called are public, however unauthenticated requests are subject to stricter
 rate limits.
 
 ## Technology Stack
+
 I have chosen standard, well-documented, and battle tested libraries for this assignment, following the KISS principle.
+
 * Java 17
 * Spring Boot 3.3.8
 * Spring Boot WebMVC
@@ -29,37 +33,50 @@ I have chosen standard, well-documented, and battle tested libraries for this as
 ## Configuration
 
 ### Optional GitHub Personal Access Token
+
 To avoid rate limiting, you may supply a [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 Set the `GITHUB_PAT` environment variable, e.g. `export GITHUB_PAT={{YOUR_TOKEN_HERE}}`.
 If it is not provided, the application will make unauthenticated requests to the upstream GitHub endpoints.
 
 ## Running Locally
+
 1. Clone the repository
+
 ```shell
-git clone <repo-url>
-cd <repo>
+git clone https://github.com/MattBroyles/branch-take-home-assignment.git
+cd branch-take-home-assignment
 ```
-2. Build the application
+
+1. Build the application
+
 ```
 ./gradlew clean build
 ```
-3. Start the service
+
+1. Start the service
+
 ```
 ./gradlew bootRun
 ```
+
 The application will start at `http://localhost:8080`
 
 ## API Usage
+
 ### Endpoint
+
 ```
-GET /github.com/users/{username}
+GET /github/users/{username}
 ```
+
 ### Example
+
 ```
 curl http://localhost:8080/users/octocat
 ```
 
 ### Example Response
+
 ```
 {
   "user_name" : "octocat",
@@ -96,9 +113,11 @@ curl http://localhost:8080/users/octocat
   } ]
 }
 ```
+
 > Note: The compact array formatting is a deliberate choice given the structure on the assignment instructions; the data is valid either way
 
 ## Error Handling
+
 Error responses returned by GitHub are mapped to appropriate statuses
 
 |GitHub Response| Service Response|
@@ -107,30 +126,35 @@ Error responses returned by GitHub are mapped to appropriate statuses
 | 401 | 401 Unauthorized |
 | 403 | 403 Forbidden |
 | 429 | 429 Too Many requests|
-| 5xx | 502 Bad Gateway | 
+| 5xx | 502 Bad Gateway |
 
 Errors are returned as structured JSON with a human friendly message and details where available
 
 ## Testing
+
 The full test suite can be run as:
+
 ```
 ./gradlew test
 ```
 
 Test coverage includes:
+
 * Controller slice tests
 * Service unit tests
 * Authorization header behavior
 * Error Mapping
 
 ## Design Notes
+
 * Spring's `RestClient` is used for outbound HTTP calls
 * Configuration is externalized via `@ConfigurationProperties`
 * Authentication header is conditionally applied when a PAT is present as an environment variable
-* Jackson is configured globally for snake_case output and ISO timestamps
+* Jackson is configured globally for snake_case output and RFC-1123 timestamps
 * All outbound dependencies are mocked in unit tests
 
 ## Project Structure
+
 | package | contents                           |
 | --------|------------------------------------|
 | config/ | Configuration beans and properties |
@@ -138,9 +162,11 @@ Test coverage includes:
 |service/| Business logic                     |
 |exceptions/| Exception model classes            |
 |model/| DTOs                               |
-|web/| Exception handling|                 
+|web/| Exception handling|
 
 ## Potential future improvements
+
 * Add OpenAPI or Swagger documentation
 * Add retries/backoff for transient upstream issues and gremlins
 * Add caching for repeated lookups
+
